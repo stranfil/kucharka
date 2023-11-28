@@ -21,17 +21,14 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Serializer\Mapping\Loader\AnnotationLoader;
 use Symfony\Component\Serializer\Mapping\Factory\ClassMetadataFactory;
 
-
-
-
 #[Route('/api', name: 'api')]
 class ReceptyController extends AbstractController
 {
-    private $manager;
+    private EntityManagerInterface $manager;
 
-    private $validator;
+    private ValidatorInterface $validator;
 
-    private $serializer;
+    private Serializer $serializer;
 
     public function __construct(EntityManagerInterface $manager, ValidatorInterface $validator)
     {
@@ -53,11 +50,11 @@ class ReceptyController extends AbstractController
         $recept = $this->serializer->denormalize($input, Recept::class, null, ['groups' => 'group1']);
 
 
-        if(isset($input['autor'])){
+        if(isset($input['autor'])) {
             $autorRepository = $this->manager->getRepository(Autor::class);
             $autor = $autorRepository->findOneBy(['name' => $input['autor']]);
-            if(!$autor){
-                $autor = new Autor;
+            if(!$autor) {
+                $autor = new Autor();
                 $autor->setName($input['autor']);
                 $this->manager->persist($autor);
             }
@@ -65,23 +62,23 @@ class ReceptyController extends AbstractController
         }
 
 
-        if(isset($input['kategorie'])){
+        if(isset($input['kategorie'])) {
             $kategorieRepository = $this->manager->getRepository(Kategorie::class);
             $kategorie = $kategorieRepository->findOneBy(['name' => $input['kategorie']]);
-            if(!$kategorie){
-                $kategorie = new Kategorie;
+            if(!$kategorie) {
+                $kategorie = new Kategorie();
                 $kategorie->setName($input['kategorie']);
                 $this->manager->persist($kategorie);
             }
             $recept->setKategorie($kategorie);
         }
 
-        if(isset($input['nastroje'])){
+        if(isset($input['nastroje'])) {
             $nastrojRepository = $this->manager->getRepository(Nastroj::class);
-            foreach($input['nastroje'] as $nastroj_name){
+            foreach($input['nastroje'] as $nastroj_name) {
                 $nastroj = $nastrojRepository->findOneBy(['name' => $nastroj_name]);
-                if(!$nastroj){
-                    $nastroj = new Nastroj;
+                if(!$nastroj) {
+                    $nastroj = new Nastroj();
                     $nastroj->setName($nastroj_name);
                     $this->manager->persist($nastroj);
                 }
@@ -89,19 +86,19 @@ class ReceptyController extends AbstractController
             }
         }
 
-        if(isset($input['ingredience'])){
+        if(isset($input['ingredience'])) {
             $ingredienceRepository = $this->manager->getRepository(Ingredience::class);
-            foreach($input['ingredience'] as $ingredience_name){
+            foreach($input['ingredience'] as $ingredience_name) {
                 $ingredience = $ingredienceRepository->findOneBy(['name' => $ingredience_name]);
-                if(!$ingredience){
-                    $ingredience = new Ingredience;
+                if(!$ingredience) {
+                    $ingredience = new Ingredience();
                     $ingredience->setName($ingredience_name);
                     $this->manager->persist($ingredience);
                 }
                 $recept->addIngredience($ingredience);
             }
         }
-        
+
 
         $errors = $this->validator->validate($recept);
         if (count($errors) > 0) {
@@ -128,13 +125,13 @@ class ReceptyController extends AbstractController
     {
 
         $receptRepository = $this->manager->getRepository(Recept::class);
-        
+
         $filter = array();
         $sort = array();
         $limit = null;
         $offset = null;
-        foreach($_GET as $key => $value){
-            switch($key){
+        foreach($_GET as $key => $value) {
+            switch($key) {
                 case 'sort_by':
                     $param = explode(".", $value);
                     $sort[$param[0]] = $param[1];
@@ -157,7 +154,7 @@ class ReceptyController extends AbstractController
                     $filter[$key] = $value;
             }
         }
-       // dd($filter);
+        // dd($filter);
         $recepty = $receptRepository->findBy($filter, $sort, $limit, $offset);
 
         $jsonContent = $this->serializer->serialize($recepty, 'json');
@@ -174,7 +171,7 @@ class ReceptyController extends AbstractController
         $input = $request->toArray();
         $recept = $this->manager->getRepository(Recept::class)->find($id);
 
-        if(!$recept){
+        if(!$recept) {
             return $this->json([
                 "recept not found for id " . $id
             ]);
@@ -183,11 +180,11 @@ class ReceptyController extends AbstractController
         $this->serializer->denormalize($input, Recept::class, null, [AbstractNormalizer::OBJECT_TO_POPULATE => $recept, 'groups' => 'group1']);
 
 
-        if(isset($input['autor'])){
+        if(isset($input['autor'])) {
             $autorRepository = $this->manager->getRepository(Autor::class);
             $autor = $autorRepository->findOneBy(['name' => $input['autor']]);
-            if(!$autor){
-                $autor = new Autor;
+            if(!$autor) {
+                $autor = new Autor();
                 $autor->setName($input['autor']);
                 $this->manager->persist($autor);
             }
@@ -195,11 +192,11 @@ class ReceptyController extends AbstractController
         }
 
 
-        if(isset($input['kategorie'])){
+        if(isset($input['kategorie'])) {
             $kategorieRepository = $this->manager->getRepository(Kategorie::class);
             $kategorie = $kategorieRepository->findOneBy(['name' => $input['kategorie']]);
-            if(!$kategorie){
-                $kategorie = new Kategorie;
+            if(!$kategorie) {
+                $kategorie = new Kategorie();
                 $kategorie->setName($input['kategorie']);
                 $this->manager->persist($kategorie);
             }
@@ -207,12 +204,12 @@ class ReceptyController extends AbstractController
         }
 
 
-        if(isset($input['nastroje'])){
+        if(isset($input['nastroje'])) {
             $nastrojRepository = $this->manager->getRepository(Nastroj::class);
-            foreach($input['nastroje'] as $nastroj_name){
+            foreach($input['nastroje'] as $nastroj_name) {
                 $nastroj = $nastrojRepository->findOneBy(['name' => $nastroj_name]);
-                if(!$nastroj){
-                    $nastroj = new Nastroj;
+                if(!$nastroj) {
+                    $nastroj = new Nastroj();
                     $nastroj->setName($nastroj_name);
                     $this->manager->persist($nastroj);
                 }
@@ -220,13 +217,13 @@ class ReceptyController extends AbstractController
             }
         }
 
-        
-        if(isset($input['ingredience'])){
+
+        if(isset($input['ingredience'])) {
             $ingredienceRepository = $this->manager->getRepository(Ingredience::class);
-            foreach($input['ingredience'] as $ingredience_name){
+            foreach($input['ingredience'] as $ingredience_name) {
                 $ingredience = $ingredienceRepository->findOneBy(['name' => $ingredience_name]);
-                if(!$ingredience){
-                    $ingredience = new Ingredience;
+                if(!$ingredience) {
+                    $ingredience = new Ingredience();
                     $ingredience->setName($ingredience_name);
                     $this->manager->persist($ingredience);
                 }
@@ -256,10 +253,10 @@ class ReceptyController extends AbstractController
     #[Route('/recepty/{id}', name: 'delete_recept', methods:['delete'])]
     public function delete(int $id): JsonResponse
     {
-        
+
         $recept = $this->manager->getRepository(Recept::class)->find($id);
 
-        if(!$recept){
+        if(!$recept) {
             return $this->json([
                 "recept not found for id " . $id
             ]);

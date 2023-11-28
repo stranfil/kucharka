@@ -20,7 +20,7 @@ class Recept
     private ?int $id = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-/*     #[Assert\Image] */
+    /*     #[Assert\Image] */
     #[Groups(['group1'])]
     private ?string $image = null;
 
@@ -56,6 +56,9 @@ class Recept
     #[Assert\NotBlank]
     private ?Kategorie $kategorie = null;
 
+    /*
+    *@var App\Entity\Ingredience
+    */
     #[ORM\ManyToMany(targetEntity: Ingredience::class, inversedBy: 'recepts')]
     private Collection $ingredience;
 

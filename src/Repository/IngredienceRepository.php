@@ -13,6 +13,7 @@ use Doctrine\Persistence\ManagerRegistry;
  * @method Ingredience|null findOneBy(array $criteria, array $orderBy = null)
  * @method Ingredience[]    findAll()
  * @method Ingredience[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ * @method array<int, int|string>   findReceptyByIngredienceName(string $name)
  */
 class IngredienceRepository extends ServiceEntityRepository
 {
@@ -21,6 +22,9 @@ class IngredienceRepository extends ServiceEntityRepository
         parent::__construct($registry, Ingredience::class);
     }
 
+    /**
+     * @return array<int, int|string>
+     */
     public function findReceptyByIngredienceName(string $name): array
     {
         $conn = $this->getEntityManager()->getConnection();
@@ -33,7 +37,7 @@ class IngredienceRepository extends ServiceEntityRepository
 
         $resultSet = $conn->executeQuery($sql, ['name' => $name]);
 
-        // returns an array of recept_ids 
+        // returns an array of recept_ids
         return array_keys($resultSet->fetchAllAssociativeIndexed());
     }
 
